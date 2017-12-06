@@ -1,5 +1,6 @@
 package com.lick.integration;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -14,14 +15,16 @@ import org.springframework.web.client.RestTemplate;
  */
 @Component
 @PropertySource(value = {"classpath:config/service.properties"},encoding = "utf-8")
-public class IndexClient {
+public class IndexClient extends BaseClient {
     @Value("${service.base-ervice}")
     private String BaseServiceUrl;
     @Autowired
     private RestTemplate restTemplate;
 
+    @HystrixCommand(fallbackMethod = "feedBack")
     public String getIndexInfo(){
         return restTemplate.getForEntity(BaseServiceUrl+"index",String.class).getBody();
     }
+
 }
 
